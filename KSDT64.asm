@@ -1,0 +1,573 @@
+; 
+; 
+; Copyright (c) 2015-2017 by blindtiger ( blindtiger@foxmail.com )
+; 
+; The contents of this file are subject to the Mozilla Public License Version
+; 2.0 (the "License"); you may not use this file except in compliance with
+; the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+; 
+; Software distributed under the License is distributed on an "AS IS" basis,
+; WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+; for the specific language governing rights and limitations under the
+; License.
+; 
+; The Initial Developer of the Original Code is blindtiger.
+; 
+; 
+
+INCLUDE ksamd64.inc
+INCLUDE SyscallTable.inc
+
+OPTION CASEMAP:NONE
+
+SeRelocateSyscallTable PROTO
+
+.DATA
+
+.CODE
+
+REFACTE_KSE_SSDT_ENTRY MACRO OPR
+
+    mov rax, $ + 0
+    push rax
+    mov rax, [SeServiceDescriptorTableCheck]
+    jmp rax
+DB  41 dup (0cch)
+
+ENDM
+
+KSE_SSDT_ENTRY MACRO OPR
+
+OPR :
+
+    REFACTE_KSE_SSDT_ENTRY
+    
+PUBLIC OPR
+
+ENDM
+
+KSE_SSDT_ENTRY SeZwAcceptConnectPort
+KSE_SSDT_ENTRY SeZwAccessCheck
+KSE_SSDT_ENTRY SeZwAccessCheckAndAuditAlarm
+KSE_SSDT_ENTRY SeZwAccessCheckByType
+KSE_SSDT_ENTRY SeZwAccessCheckByTypeAndAuditAlarm
+KSE_SSDT_ENTRY SeZwAccessCheckByTypeResultList
+KSE_SSDT_ENTRY SeZwAccessCheckByTypeResultListAndAuditAlarm
+KSE_SSDT_ENTRY SeZwAccessCheckByTypeResultListAndAuditAlarmByHandle
+KSE_SSDT_ENTRY SeZwAcquireCMFViewOwnership
+KSE_SSDT_ENTRY SeZwAcquireProcessActivityReference
+KSE_SSDT_ENTRY SeZwAddAtom
+KSE_SSDT_ENTRY SeZwAddAtomEx
+KSE_SSDT_ENTRY SeZwAddBootEntry
+KSE_SSDT_ENTRY SeZwAddDriverEntry
+KSE_SSDT_ENTRY SeZwAdjustGroupsToken
+KSE_SSDT_ENTRY SeZwAdjustPrivilegesToken
+KSE_SSDT_ENTRY SeZwAdjustTokenClaimsAndDeviceGroups
+KSE_SSDT_ENTRY SeZwAlertResumeThread
+KSE_SSDT_ENTRY SeZwAlertThread
+KSE_SSDT_ENTRY SeZwAlertThreadByThreadId
+KSE_SSDT_ENTRY SeZwAllocateLocallyUniqueId
+KSE_SSDT_ENTRY SeZwAllocateReserveObject
+KSE_SSDT_ENTRY SeZwAllocateUserPhysicalPages
+KSE_SSDT_ENTRY SeZwAllocateUuids
+KSE_SSDT_ENTRY SeZwAllocateVirtualMemory
+KSE_SSDT_ENTRY SeZwAlpcAcceptConnectPort
+KSE_SSDT_ENTRY SeZwAlpcCancelMessage
+KSE_SSDT_ENTRY SeZwAlpcConnectPort
+KSE_SSDT_ENTRY SeZwAlpcConnectPortEx
+KSE_SSDT_ENTRY SeZwAlpcCreatePort
+KSE_SSDT_ENTRY SeZwAlpcCreatePortSection
+KSE_SSDT_ENTRY SeZwAlpcCreateResourceReserve
+KSE_SSDT_ENTRY SeZwAlpcCreateSectionView
+KSE_SSDT_ENTRY SeZwAlpcCreateSecurityContext
+KSE_SSDT_ENTRY SeZwAlpcDeletePortSection
+KSE_SSDT_ENTRY SeZwAlpcDeleteResourceReserve
+KSE_SSDT_ENTRY SeZwAlpcDeleteSectionView
+KSE_SSDT_ENTRY SeZwAlpcDeleteSecurityContext
+KSE_SSDT_ENTRY SeZwAlpcDisconnectPort
+KSE_SSDT_ENTRY SeZwAlpcImpersonateClientContainerOfPort
+KSE_SSDT_ENTRY SeZwAlpcImpersonateClientOfPort
+KSE_SSDT_ENTRY SeZwAlpcOpenSenderProcess
+KSE_SSDT_ENTRY SeZwAlpcOpenSenderThread
+KSE_SSDT_ENTRY SeZwAlpcQueryInformation
+KSE_SSDT_ENTRY SeZwAlpcQueryInformationMessage
+KSE_SSDT_ENTRY SeZwAlpcRevokeSecurityContext
+KSE_SSDT_ENTRY SeZwAlpcSendWaitReceivePort
+KSE_SSDT_ENTRY SeZwAlpcSetInformation
+KSE_SSDT_ENTRY SeZwApphelpCacheControl
+KSE_SSDT_ENTRY SeZwAreMappedFilesTheSame
+KSE_SSDT_ENTRY SeZwAssignProcessToJobObject
+KSE_SSDT_ENTRY SeZwAssociateWaitCompletionPacket
+KSE_SSDT_ENTRY SeZwCallEnclave
+KSE_SSDT_ENTRY SeZwCallbackReturn
+KSE_SSDT_ENTRY SeZwCancelDeviceWakeupRequest
+KSE_SSDT_ENTRY SeZwCancelIoFile
+KSE_SSDT_ENTRY SeZwCancelIoFileEx
+KSE_SSDT_ENTRY SeZwCancelSynchronousIoFile
+KSE_SSDT_ENTRY SeZwCancelTimer
+KSE_SSDT_ENTRY SeZwCancelTimer2
+KSE_SSDT_ENTRY SeZwCancelWaitCompletionPacket
+KSE_SSDT_ENTRY SeZwClearAllSavepointsTransaction
+KSE_SSDT_ENTRY SeZwClearEvent
+KSE_SSDT_ENTRY SeZwClearSavepointTransaction
+KSE_SSDT_ENTRY SeZwClose
+KSE_SSDT_ENTRY SeZwCloseObjectAuditAlarm
+KSE_SSDT_ENTRY SeZwCommitComplete
+KSE_SSDT_ENTRY SeZwCommitEnlistment
+KSE_SSDT_ENTRY SeZwCommitRegistryTransaction
+KSE_SSDT_ENTRY SeZwCommitTransaction
+KSE_SSDT_ENTRY SeZwCompactKeys
+KSE_SSDT_ENTRY SeZwCompareObjects
+KSE_SSDT_ENTRY SeZwCompareSigningLevels
+KSE_SSDT_ENTRY SeZwCompareTokens
+KSE_SSDT_ENTRY SeZwCompleteConnectPort
+KSE_SSDT_ENTRY SeZwCompressKey
+KSE_SSDT_ENTRY SeZwConnectPort
+KSE_SSDT_ENTRY SeZwContinue
+KSE_SSDT_ENTRY SeZwConvertBetweenAuxiliaryCounterAndPerformanceCounter
+KSE_SSDT_ENTRY SeZwCreateDebugObject
+KSE_SSDT_ENTRY SeZwCreateDirectoryObject
+KSE_SSDT_ENTRY SeZwCreateDirectoryObjectEx
+KSE_SSDT_ENTRY SeZwCreateEnclave
+KSE_SSDT_ENTRY SeZwCreateEnlistment
+KSE_SSDT_ENTRY SeZwCreateEvent
+KSE_SSDT_ENTRY SeZwCreateEventPair
+KSE_SSDT_ENTRY SeZwCreateFile
+KSE_SSDT_ENTRY SeZwCreateIRTimer
+KSE_SSDT_ENTRY SeZwCreateIoCompletion
+KSE_SSDT_ENTRY SeZwCreateJobObject
+KSE_SSDT_ENTRY SeZwCreateJobSet
+KSE_SSDT_ENTRY SeZwCreateKey
+KSE_SSDT_ENTRY SeZwCreateKeyTransacted
+KSE_SSDT_ENTRY SeZwCreateKeyedEvent
+KSE_SSDT_ENTRY SeZwCreateLowBoxToken
+KSE_SSDT_ENTRY SeZwCreateMailslotFile
+KSE_SSDT_ENTRY SeZwCreateMutant
+KSE_SSDT_ENTRY SeZwCreateNamedPipeFile
+KSE_SSDT_ENTRY SeZwCreatePagingFile
+KSE_SSDT_ENTRY SeZwCreatePartition
+KSE_SSDT_ENTRY SeZwCreatePort
+KSE_SSDT_ENTRY SeZwCreatePrivateNamespace
+KSE_SSDT_ENTRY SeZwCreateProcess
+KSE_SSDT_ENTRY SeZwCreateProcessEx
+KSE_SSDT_ENTRY SeZwCreateProfile
+KSE_SSDT_ENTRY SeZwCreateProfileEx
+KSE_SSDT_ENTRY SeZwCreateRegistryTransaction
+KSE_SSDT_ENTRY SeZwCreateResourceManager
+KSE_SSDT_ENTRY SeZwCreateSection
+KSE_SSDT_ENTRY SeZwCreateSemaphore
+KSE_SSDT_ENTRY SeZwCreateSymbolicLinkObject
+KSE_SSDT_ENTRY SeZwCreateThread
+KSE_SSDT_ENTRY SeZwCreateThreadEx
+KSE_SSDT_ENTRY SeZwCreateTimer
+KSE_SSDT_ENTRY SeZwCreateTimer2
+KSE_SSDT_ENTRY SeZwCreateToken
+KSE_SSDT_ENTRY SeZwCreateTokenEx
+KSE_SSDT_ENTRY SeZwCreateTransaction
+KSE_SSDT_ENTRY SeZwCreateTransactionManager
+KSE_SSDT_ENTRY SeZwCreateUserProcess
+KSE_SSDT_ENTRY SeZwCreateWaitCompletionPacket
+KSE_SSDT_ENTRY SeZwCreateWaitablePort
+KSE_SSDT_ENTRY SeZwCreateWnfStateName
+KSE_SSDT_ENTRY SeZwCreateWorkerFactory
+KSE_SSDT_ENTRY SeZwDebugActiveProcess
+KSE_SSDT_ENTRY SeZwDebugContinue
+KSE_SSDT_ENTRY SeZwDelayExecution
+KSE_SSDT_ENTRY SeZwDeleteAtom
+KSE_SSDT_ENTRY SeZwDeleteBootEntry
+KSE_SSDT_ENTRY SeZwDeleteDriverEntry
+KSE_SSDT_ENTRY SeZwDeleteFile
+KSE_SSDT_ENTRY SeZwDeleteKey
+KSE_SSDT_ENTRY SeZwDeleteObjectAuditAlarm
+KSE_SSDT_ENTRY SeZwDeletePrivateNamespace
+KSE_SSDT_ENTRY SeZwDeleteValueKey
+KSE_SSDT_ENTRY SeZwDeleteWnfStateData
+KSE_SSDT_ENTRY SeZwDeleteWnfStateName
+KSE_SSDT_ENTRY SeZwDeviceIoControlFile
+KSE_SSDT_ENTRY SeZwDisableLastKnownGood
+KSE_SSDT_ENTRY SeZwDisplayString
+KSE_SSDT_ENTRY SeZwDrawText
+KSE_SSDT_ENTRY SeZwDuplicateObject
+KSE_SSDT_ENTRY SeZwDuplicateToken
+KSE_SSDT_ENTRY SeZwEnableLastKnownGood
+KSE_SSDT_ENTRY SeZwEnumerateBootEntries
+KSE_SSDT_ENTRY SeZwEnumerateDriverEntries
+KSE_SSDT_ENTRY SeZwEnumerateKey
+KSE_SSDT_ENTRY SeZwEnumerateSystemEnvironmentValuesEx
+KSE_SSDT_ENTRY SeZwEnumerateTransactionObject
+KSE_SSDT_ENTRY SeZwEnumerateValueKey
+KSE_SSDT_ENTRY SeZwExtendSection
+KSE_SSDT_ENTRY SeZwFilterBootOption
+KSE_SSDT_ENTRY SeZwFilterToken
+KSE_SSDT_ENTRY SeZwFilterTokenEx
+KSE_SSDT_ENTRY SeZwFindAtom
+KSE_SSDT_ENTRY SeZwFlushBuffersFile
+KSE_SSDT_ENTRY SeZwFlushBuffersFileEx
+KSE_SSDT_ENTRY SeZwFlushInstallUILanguage
+KSE_SSDT_ENTRY SeZwFlushInstructionCache
+KSE_SSDT_ENTRY SeZwFlushKey
+KSE_SSDT_ENTRY SeZwFlushProcessWriteBuffers
+KSE_SSDT_ENTRY SeZwFlushVirtualMemory
+KSE_SSDT_ENTRY SeZwFlushWriteBuffer
+KSE_SSDT_ENTRY SeZwFreeUserPhysicalPages
+KSE_SSDT_ENTRY SeZwFreeVirtualMemory
+KSE_SSDT_ENTRY SeZwFreezeRegistry
+KSE_SSDT_ENTRY SeZwFreezeTransactions
+KSE_SSDT_ENTRY SeZwFsControlFile
+KSE_SSDT_ENTRY SeZwGetCachedSigningLevel
+KSE_SSDT_ENTRY SeZwGetCompleteWnfStateSubscription
+KSE_SSDT_ENTRY SeZwGetContextThread
+KSE_SSDT_ENTRY SeZwGetCurrentProcessorNumber
+KSE_SSDT_ENTRY SeZwGetCurrentProcessorNumberEx
+KSE_SSDT_ENTRY SeZwGetDevicePowerState
+KSE_SSDT_ENTRY SeZwGetMUIRegistryInfo
+KSE_SSDT_ENTRY SeZwGetNextProcess
+KSE_SSDT_ENTRY SeZwGetNextThread
+KSE_SSDT_ENTRY SeZwGetNlsSectionPtr
+KSE_SSDT_ENTRY SeZwGetNotificationResourceManager
+KSE_SSDT_ENTRY SeZwGetPlugPlayEvent
+KSE_SSDT_ENTRY SeZwGetWriteWatch
+KSE_SSDT_ENTRY SeZwImpersonateAnonymousToken
+KSE_SSDT_ENTRY SeZwImpersonateClientOfPort
+KSE_SSDT_ENTRY SeZwImpersonateThread
+KSE_SSDT_ENTRY SeZwInitializeEnclave
+KSE_SSDT_ENTRY SeZwInitializeNlsFiles
+KSE_SSDT_ENTRY SeZwInitializeRegistry
+KSE_SSDT_ENTRY SeZwInitiatePowerAction
+KSE_SSDT_ENTRY SeZwIsProcessInJob
+KSE_SSDT_ENTRY SeZwIsSystemResumeAutomatic
+KSE_SSDT_ENTRY SeZwIsUILanguageComitted
+KSE_SSDT_ENTRY SeZwListTransactions
+KSE_SSDT_ENTRY SeZwListenPort
+KSE_SSDT_ENTRY SeZwLoadDriver
+KSE_SSDT_ENTRY SeZwLoadEnclaveData
+KSE_SSDT_ENTRY SeZwLoadHotPatch
+KSE_SSDT_ENTRY SeZwLoadKey
+KSE_SSDT_ENTRY SeZwLoadKey2
+KSE_SSDT_ENTRY SeZwLoadKeyEx
+KSE_SSDT_ENTRY SeZwLockFile
+KSE_SSDT_ENTRY SeZwLockProductActivationKeys
+KSE_SSDT_ENTRY SeZwLockRegistryKey
+KSE_SSDT_ENTRY SeZwLockVirtualMemory
+KSE_SSDT_ENTRY SeZwMakePermanentObject
+KSE_SSDT_ENTRY SeZwMakeTemporaryObject
+KSE_SSDT_ENTRY SeZwManagePartition
+KSE_SSDT_ENTRY SeZwMapCMFModule
+KSE_SSDT_ENTRY SeZwMapUserPhysicalPages
+KSE_SSDT_ENTRY SeZwMapUserPhysicalPagesScatter
+KSE_SSDT_ENTRY SeZwMapViewOfSection
+KSE_SSDT_ENTRY SeZwMarshallTransaction
+KSE_SSDT_ENTRY SeZwModifyBootEntry
+KSE_SSDT_ENTRY SeZwModifyDriverEntry
+KSE_SSDT_ENTRY SeZwNotifyChangeDirectoryFile
+KSE_SSDT_ENTRY SeZwNotifyChangeDirectoryFileEx
+KSE_SSDT_ENTRY SeZwNotifyChangeKey
+KSE_SSDT_ENTRY SeZwNotifyChangeMultipleKeys
+KSE_SSDT_ENTRY SeZwNotifyChangeSession
+KSE_SSDT_ENTRY SeZwOpenDirectoryObject
+KSE_SSDT_ENTRY SeZwOpenEnlistment
+KSE_SSDT_ENTRY SeZwOpenEvent
+KSE_SSDT_ENTRY SeZwOpenEventPair
+KSE_SSDT_ENTRY SeZwOpenFile
+KSE_SSDT_ENTRY SeZwOpenIoCompletion
+KSE_SSDT_ENTRY SeZwOpenJobObject
+KSE_SSDT_ENTRY SeZwOpenKey
+KSE_SSDT_ENTRY SeZwOpenKeyEx
+KSE_SSDT_ENTRY SeZwOpenKeyTransacted
+KSE_SSDT_ENTRY SeZwOpenKeyTransactedEx
+KSE_SSDT_ENTRY SeZwOpenKeyedEvent
+KSE_SSDT_ENTRY SeZwOpenMutant
+KSE_SSDT_ENTRY SeZwOpenObjectAuditAlarm
+KSE_SSDT_ENTRY SeZwOpenPartition
+KSE_SSDT_ENTRY SeZwOpenPrivateNamespace
+KSE_SSDT_ENTRY SeZwOpenProcess
+KSE_SSDT_ENTRY SeZwOpenProcessToken
+KSE_SSDT_ENTRY SeZwOpenProcessTokenEx
+KSE_SSDT_ENTRY SeZwOpenRegistryTransaction
+KSE_SSDT_ENTRY SeZwOpenResourceManager
+KSE_SSDT_ENTRY SeZwOpenSection
+KSE_SSDT_ENTRY SeZwOpenSemaphore
+KSE_SSDT_ENTRY SeZwOpenSession
+KSE_SSDT_ENTRY SeZwOpenSymbolicLinkObject
+KSE_SSDT_ENTRY SeZwOpenThread
+KSE_SSDT_ENTRY SeZwOpenThreadToken
+KSE_SSDT_ENTRY SeZwOpenThreadTokenEx
+KSE_SSDT_ENTRY SeZwOpenTimer
+KSE_SSDT_ENTRY SeZwOpenTransaction
+KSE_SSDT_ENTRY SeZwOpenTransactionManager
+KSE_SSDT_ENTRY SeZwPlugPlayControl
+KSE_SSDT_ENTRY SeZwPowerInformation
+KSE_SSDT_ENTRY SeZwPrePrepareComplete
+KSE_SSDT_ENTRY SeZwPrePrepareEnlistment
+KSE_SSDT_ENTRY SeZwPrepareComplete
+KSE_SSDT_ENTRY SeZwPrepareEnlistment
+KSE_SSDT_ENTRY SeZwPrivilegeCheck
+KSE_SSDT_ENTRY SeZwPrivilegeObjectAuditAlarm
+KSE_SSDT_ENTRY SeZwPrivilegedServiceAuditAlarm
+KSE_SSDT_ENTRY SeZwPropagationComplete
+KSE_SSDT_ENTRY SeZwPropagationFailed
+KSE_SSDT_ENTRY SeZwProtectVirtualMemory
+KSE_SSDT_ENTRY SeZwPullTransaction
+KSE_SSDT_ENTRY SeZwPulseEvent
+KSE_SSDT_ENTRY SeZwQueryAttributesFile
+KSE_SSDT_ENTRY SeZwQueryAuxiliaryCounterFrequency
+KSE_SSDT_ENTRY SeZwQueryBootEntryOrder
+KSE_SSDT_ENTRY SeZwQueryBootOptions
+KSE_SSDT_ENTRY SeZwQueryDebugFilterState
+KSE_SSDT_ENTRY SeZwQueryDefaultLocale
+KSE_SSDT_ENTRY SeZwQueryDefaultUILanguage
+KSE_SSDT_ENTRY SeZwQueryDirectoryFile
+KSE_SSDT_ENTRY SeZwQueryDirectoryFileEx
+KSE_SSDT_ENTRY SeZwQueryDirectoryObject
+KSE_SSDT_ENTRY SeZwQueryDriverEntryOrder
+KSE_SSDT_ENTRY SeZwQueryEaFile
+KSE_SSDT_ENTRY SeZwQueryEvent
+KSE_SSDT_ENTRY SeZwQueryFullAttributesFile
+KSE_SSDT_ENTRY SeZwQueryInformationAtom
+KSE_SSDT_ENTRY SeZwQueryInformationByName
+KSE_SSDT_ENTRY SeZwQueryInformationEnlistment
+KSE_SSDT_ENTRY SeZwQueryInformationFile
+KSE_SSDT_ENTRY SeZwQueryInformationJobObject
+KSE_SSDT_ENTRY SeZwQueryInformationPort
+KSE_SSDT_ENTRY SeZwQueryInformationProcess
+KSE_SSDT_ENTRY SeZwQueryInformationResourceManager
+KSE_SSDT_ENTRY SeZwQueryInformationThread
+KSE_SSDT_ENTRY SeZwQueryInformationToken
+KSE_SSDT_ENTRY SeZwQueryInformationTransaction
+KSE_SSDT_ENTRY SeZwQueryInformationTransactionManager
+KSE_SSDT_ENTRY SeZwQueryInformationWorkerFactory
+KSE_SSDT_ENTRY SeZwQueryInstallUILanguage
+KSE_SSDT_ENTRY SeZwQueryIntervalProfile
+KSE_SSDT_ENTRY SeZwQueryIoCompletion
+KSE_SSDT_ENTRY SeZwQueryKey
+KSE_SSDT_ENTRY SeZwQueryLicenseValue
+KSE_SSDT_ENTRY SeZwQueryMultipleValueKey
+KSE_SSDT_ENTRY SeZwQueryMutant
+KSE_SSDT_ENTRY SeZwQueryObject
+KSE_SSDT_ENTRY SeZwQueryOpenSubKeys
+KSE_SSDT_ENTRY SeZwQueryOpenSubKeysEx
+KSE_SSDT_ENTRY SeZwQueryPerformanceCounter
+KSE_SSDT_ENTRY SeZwQueryPortInformationProcess
+KSE_SSDT_ENTRY SeZwQueryQuotaInformationFile
+KSE_SSDT_ENTRY SeZwQuerySection
+KSE_SSDT_ENTRY SeZwQuerySecurityAttributesToken
+KSE_SSDT_ENTRY SeZwQuerySecurityObject
+KSE_SSDT_ENTRY SeZwQuerySecurityPolicy
+KSE_SSDT_ENTRY SeZwQuerySemaphore
+KSE_SSDT_ENTRY SeZwQuerySymbolicLinkObject
+KSE_SSDT_ENTRY SeZwQuerySystemEnvironmentValue
+KSE_SSDT_ENTRY SeZwQuerySystemEnvironmentValueEx
+KSE_SSDT_ENTRY SeZwQuerySystemInformation
+KSE_SSDT_ENTRY SeZwQuerySystemInformationEx
+KSE_SSDT_ENTRY SeZwQuerySystemTime
+KSE_SSDT_ENTRY SeZwQueryTimer
+KSE_SSDT_ENTRY SeZwQueryTimerResolution
+KSE_SSDT_ENTRY SeZwQueryValueKey
+KSE_SSDT_ENTRY SeZwQueryVirtualMemory
+KSE_SSDT_ENTRY SeZwQueryVolumeInformationFile
+KSE_SSDT_ENTRY SeZwQueryWnfStateData
+KSE_SSDT_ENTRY SeZwQueryWnfStateNameInformation
+KSE_SSDT_ENTRY SeZwQueueApcThread
+KSE_SSDT_ENTRY SeZwQueueApcThreadEx
+KSE_SSDT_ENTRY SeZwRaiseException
+KSE_SSDT_ENTRY SeZwRaiseHardError
+KSE_SSDT_ENTRY SeZwReadFile
+KSE_SSDT_ENTRY SeZwReadFileScatter
+KSE_SSDT_ENTRY SeZwReadOnlyEnlistment
+KSE_SSDT_ENTRY SeZwReadRequestData
+KSE_SSDT_ENTRY SeZwReadVirtualMemory
+KSE_SSDT_ENTRY SeZwRecoverEnlistment
+KSE_SSDT_ENTRY SeZwRecoverResourceManager
+KSE_SSDT_ENTRY SeZwRecoverTransactionManager
+KSE_SSDT_ENTRY SeZwRegisterProtocolAddressInformation
+KSE_SSDT_ENTRY SeZwRegisterThreadTerminatePort
+KSE_SSDT_ENTRY SeZwReleaseCMFViewOwnership
+KSE_SSDT_ENTRY SeZwReleaseKeyedEvent
+KSE_SSDT_ENTRY SeZwReleaseMutant
+KSE_SSDT_ENTRY SeZwReleaseSemaphore
+KSE_SSDT_ENTRY SeZwReleaseWorkerFactoryWorker
+KSE_SSDT_ENTRY SeZwRemoveIoCompletion
+KSE_SSDT_ENTRY SeZwRemoveIoCompletionEx
+KSE_SSDT_ENTRY SeZwRemoveProcessDebug
+KSE_SSDT_ENTRY SeZwRenameKey
+KSE_SSDT_ENTRY SeZwRenameTransactionManager
+KSE_SSDT_ENTRY SeZwReplaceKey
+KSE_SSDT_ENTRY SeZwReplacePartitionUnit
+KSE_SSDT_ENTRY SeZwReplyPort
+KSE_SSDT_ENTRY SeZwReplyWaitReceivePort
+KSE_SSDT_ENTRY SeZwReplyWaitReceivePortEx
+KSE_SSDT_ENTRY SeZwReplyWaitReplyPort
+KSE_SSDT_ENTRY SeZwRequestDeviceWakeup
+KSE_SSDT_ENTRY SeZwRequestPort
+KSE_SSDT_ENTRY SeZwRequestWaitReplyPort
+KSE_SSDT_ENTRY SeZwRequestWakeupLatency
+KSE_SSDT_ENTRY SeZwResetEvent
+KSE_SSDT_ENTRY SeZwResetWriteWatch
+KSE_SSDT_ENTRY SeZwRestoreKey
+KSE_SSDT_ENTRY SeZwResumeProcess
+KSE_SSDT_ENTRY SeZwResumeThread
+KSE_SSDT_ENTRY SeZwRevertContainerImpersonation
+KSE_SSDT_ENTRY SeZwRollbackComplete
+KSE_SSDT_ENTRY SeZwRollbackEnlistment
+KSE_SSDT_ENTRY SeZwRollbackRegistryTransaction
+KSE_SSDT_ENTRY SeZwRollbackSavepointTransaction
+KSE_SSDT_ENTRY SeZwRollbackTransaction
+KSE_SSDT_ENTRY SeZwRollforwardTransactionManager
+KSE_SSDT_ENTRY SeZwSaveKey
+KSE_SSDT_ENTRY SeZwSaveKeyEx
+KSE_SSDT_ENTRY SeZwSaveMergedKeys
+KSE_SSDT_ENTRY SeZwSavepointComplete
+KSE_SSDT_ENTRY SeZwSavepointTransaction
+KSE_SSDT_ENTRY SeZwSecureConnectPort
+KSE_SSDT_ENTRY SeZwSerializeBoot
+KSE_SSDT_ENTRY SeZwSetBootEntryOrder
+KSE_SSDT_ENTRY SeZwSetBootOptions
+KSE_SSDT_ENTRY SeZwSetCachedSigningLevel
+KSE_SSDT_ENTRY SeZwSetCachedSigningLevel2
+KSE_SSDT_ENTRY SeZwSetContextThread
+KSE_SSDT_ENTRY SeZwSetDebugFilterState
+KSE_SSDT_ENTRY SeZwSetDefaultHardErrorPort
+KSE_SSDT_ENTRY SeZwSetDefaultLocale
+KSE_SSDT_ENTRY SeZwSetDefaultUILanguage
+KSE_SSDT_ENTRY SeZwSetDriverEntryOrder
+KSE_SSDT_ENTRY SeZwSetEaFile
+KSE_SSDT_ENTRY SeZwSetEvent
+KSE_SSDT_ENTRY SeZwSetEventBoostPriority
+KSE_SSDT_ENTRY SeZwSetHighEventPair
+KSE_SSDT_ENTRY SeZwSetHighWaitLowEventPair
+KSE_SSDT_ENTRY SeZwSetIRTimer
+KSE_SSDT_ENTRY SeZwSetInformationDebugObject
+KSE_SSDT_ENTRY SeZwSetInformationEnlistment
+KSE_SSDT_ENTRY SeZwSetInformationFile
+KSE_SSDT_ENTRY SeZwSetInformationJobObject
+KSE_SSDT_ENTRY SeZwSetInformationKey
+KSE_SSDT_ENTRY SeZwSetInformationObject
+KSE_SSDT_ENTRY SeZwSetInformationProcess
+KSE_SSDT_ENTRY SeZwSetInformationResourceManager
+KSE_SSDT_ENTRY SeZwSetInformationSymbolicLink
+KSE_SSDT_ENTRY SeZwSetInformationThread
+KSE_SSDT_ENTRY SeZwSetInformationToken
+KSE_SSDT_ENTRY SeZwSetInformationTransaction
+KSE_SSDT_ENTRY SeZwSetInformationTransactionManager
+KSE_SSDT_ENTRY SeZwSetInformationVirtualMemory
+KSE_SSDT_ENTRY SeZwSetInformationWorkerFactory
+KSE_SSDT_ENTRY SeZwSetIntervalProfile
+KSE_SSDT_ENTRY SeZwSetIoCompletion
+KSE_SSDT_ENTRY SeZwSetIoCompletionEx
+KSE_SSDT_ENTRY SeZwSetLdtEntries
+KSE_SSDT_ENTRY SeZwSetLowEventPair
+KSE_SSDT_ENTRY SeZwSetLowWaitHighEventPair
+KSE_SSDT_ENTRY SeZwSetQuotaInformationFile
+KSE_SSDT_ENTRY SeZwSetSecurityObject
+KSE_SSDT_ENTRY SeZwSetSystemEnvironmentValue
+KSE_SSDT_ENTRY SeZwSetSystemEnvironmentValueEx
+KSE_SSDT_ENTRY SeZwSetSystemInformation
+KSE_SSDT_ENTRY SeZwSetSystemPowerState
+KSE_SSDT_ENTRY SeZwSetSystemTime
+KSE_SSDT_ENTRY SeZwSetThreadExecutionState
+KSE_SSDT_ENTRY SeZwSetTimer
+KSE_SSDT_ENTRY SeZwSetTimer2
+KSE_SSDT_ENTRY SeZwSetTimerEx
+KSE_SSDT_ENTRY SeZwSetTimerResolution
+KSE_SSDT_ENTRY SeZwSetUuidSeed
+KSE_SSDT_ENTRY SeZwSetValueKey
+KSE_SSDT_ENTRY SeZwSetVolumeInformationFile
+KSE_SSDT_ENTRY SeZwSetWnfProcessNotificationEvent
+KSE_SSDT_ENTRY SeZwShutdownSystem
+KSE_SSDT_ENTRY SeZwShutdownWorkerFactory
+KSE_SSDT_ENTRY SeZwSignalAndWaitForSingleObject
+KSE_SSDT_ENTRY SeZwSinglePhaseReject
+KSE_SSDT_ENTRY SeZwStartProfile
+KSE_SSDT_ENTRY SeZwStartTm
+KSE_SSDT_ENTRY SeZwStopProfile
+KSE_SSDT_ENTRY SeZwSubscribeWnfStateChange
+KSE_SSDT_ENTRY SeZwSuspendProcess
+KSE_SSDT_ENTRY SeZwSuspendThread
+KSE_SSDT_ENTRY SeZwSystemDebugControl
+KSE_SSDT_ENTRY SeZwTerminateEnclave
+KSE_SSDT_ENTRY SeZwTerminateJobObject
+KSE_SSDT_ENTRY SeZwTerminateProcess
+KSE_SSDT_ENTRY SeZwTerminateThread
+KSE_SSDT_ENTRY SeZwTestAlert
+KSE_SSDT_ENTRY SeZwThawRegistry
+KSE_SSDT_ENTRY SeZwThawTransactions
+KSE_SSDT_ENTRY SeZwTraceControl
+KSE_SSDT_ENTRY SeZwTraceEvent
+KSE_SSDT_ENTRY SeZwTranslateFilePath
+KSE_SSDT_ENTRY SeZwUmsThreadYield
+KSE_SSDT_ENTRY SeZwUnloadDriver
+KSE_SSDT_ENTRY SeZwUnloadKey
+KSE_SSDT_ENTRY SeZwUnloadKey2
+KSE_SSDT_ENTRY SeZwUnloadKeyEx
+KSE_SSDT_ENTRY SeZwUnlockFile
+KSE_SSDT_ENTRY SeZwUnlockVirtualMemory
+KSE_SSDT_ENTRY SeZwUnmapViewOfSection
+KSE_SSDT_ENTRY SeZwUnmapViewOfSectionEx
+KSE_SSDT_ENTRY SeZwUnsubscribeWnfStateChange
+KSE_SSDT_ENTRY SeZwUpdateWnfStateData
+KSE_SSDT_ENTRY SeZwVdmControl
+KSE_SSDT_ENTRY SeZwWaitForAlertByThreadId
+KSE_SSDT_ENTRY SeZwWaitForDebugEvent
+KSE_SSDT_ENTRY SeZwWaitForKeyedEvent
+KSE_SSDT_ENTRY SeZwWaitForMultipleObjects
+KSE_SSDT_ENTRY SeZwWaitForMultipleObjects32
+KSE_SSDT_ENTRY SeZwWaitForSingleObject
+KSE_SSDT_ENTRY SeZwWaitForWnfNotifications
+KSE_SSDT_ENTRY SeZwWaitForWorkViaWorkerFactory
+KSE_SSDT_ENTRY SeZwWaitHighEventPair
+KSE_SSDT_ENTRY SeZwWaitLowEventPair
+KSE_SSDT_ENTRY SeZwWorkerFactoryWorkerReady
+KSE_SSDT_ENTRY SeZwWriteFile
+KSE_SSDT_ENTRY SeZwWriteFileGather
+KSE_SSDT_ENTRY SeZwWriteRequestData
+KSE_SSDT_ENTRY SeZwWriteVirtualMemory
+KSE_SSDT_ENTRY SeZwYieldExecution
+
+SyscallInternal PROC
+
+DB  048h, 089h, 04ch, 024h, 008h
+DB  048h, 089h, 054h, 024h, 010h
+DB  04ch, 089h, 044h, 024h, 018h
+DB  04ch, 089h, 04ch, 024h, 020h
+DB  048h, 08bh, 0c4h
+DB  0fah
+DB  048h, 083h, 0ech, 010h
+DB  050h
+DB  09ch
+DB  06ah, 010h
+DB  048h, 0b8h
+DB  8 dup (0ffh)
+;mov rax, KiServiceLinkage
+DB  050h
+DB  0b8h
+DB  4 dup (0ffh)
+;mov eax, KiServiceTableIndex
+DB  049h, 0bbh
+DB  8 dup (0ffh)
+;mov r11, KiServiceInternal
+DB  041h, 0ffh, 0e3h
+DB  3 dup (0cch)
+
+SyscallInternal ENDP
+
+SeServiceDescriptorTableCheck PROC
+
+    mov [rsp + 10h], rcx
+    mov [rsp + 18h], rdx
+    mov [rsp + 20h], r8
+    mov [rsp + 28h], r9
+    sub rsp, 28h
+    pushfq
+    call SeRelocateSyscallTable
+    popfq
+    add rsp, 28h
+    mov rcx, [rsp + 10h]
+    mov rdx, [rsp + 18h]
+    mov r8, [rsp + 20h]
+    mov r9, [rsp + 28h]
+    ret
+DB  7 dup (0cch)
+SeServiceDescriptorTableCheck ENDP
+
+END
