@@ -27,7 +27,7 @@
 #else
 #define SE_DEBUG_OUTPUT(_x_, ...) \
             (DbgPrint( \
-				"[SE][BronzeDoor] " ##_x_, ##__VA_ARGS__))
+				"[SE][SyscallTable] " ##_x_, ##__VA_ARGS__))
 #endif // !_DEBUG
 #endif // !SE_DEBUG_OUTPUT
 

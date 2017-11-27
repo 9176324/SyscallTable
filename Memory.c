@@ -21,8 +21,6 @@
 #include "Log.h"
 #include "SafeString.h"
 
-#include "..\BronzeDoor\Reload.h"
-
 #ifndef _KERNEL_MODE
 
 NTSYSCALLAPI
