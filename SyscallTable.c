@@ -51,20 +51,16 @@ SeZwAcceptConnectPort(
 
 SE_STATIC PVOID KiSystemService;
 
+#define SE_AJUST_KSDT_ENTRY32(_p_) \
+            (SeAjustKsdtEntry32(SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))))
+
 #define SE_AJUST_KSDT_ENTRY(_p_, _x_) \
             (RtlCopyMemory( \
                 SE_TO_TYPE(PVOID, (_p_)), \
                 SE_TO_TYPE(PVOID, (&SyscallInternal)), \
                 SE_CODE_ALIGNMENT), \
-             SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))->u1.KiServiceTableIndex = \
-                 SE_TO_TYPE(ULONG, _x_), \
-             SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))->u2.KiSystemService = \
-                SE_VA_TO_JMP( \
-                     SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))->u2.KiSystemService, \
-                     KiSystemService))
-
-#define SE_AJUST_KSDT_ENTRY32(_p_) \
-            (SeAjustKsdtEntry32(SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))))
+            SE_TO_TYPE(PKSE_SSDT_ENTRY, (_p_))->u1.KiServiceTableIndex = \
+                 SE_TO_TYPE(ULONG, _x_), SE_AJUST_KSDT_ENTRY32((_p_)))
 
 VOID
 NTAPI
@@ -1801,10 +1797,6 @@ SeRelocateSyscallTable(
                         SE_AJUST_KSDT_ENTRY(
                             SE_ADD_POINTER(SeCloneKeServiceDescriptorTable, i * SE_CODE_ALIGNMENT),
                             i);
-#ifndef _WIN64
-                        SE_AJUST_KSDT_ENTRY32(
-                            SE_ADD_POINTER(SeCloneKeServiceDescriptorTable, i * SE_CODE_ALIGNMENT));
-#endif // !_WIN64
                     }
 
                     for (SIZE_T i = 0;
