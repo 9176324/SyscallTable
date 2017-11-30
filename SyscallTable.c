@@ -40,7 +40,8 @@ SeZwAcceptConnectPort(
 
 #ifndef _WIN64
 #define SE_CALC_KSDT_ENTRY(_t_, _x_) \
-            (SE_TO_TYPE(PVOID, *SE_TO_TYPE(PULONG_PTR, SE_ADD_POINTER((_t_)->Base, (_x_)))))
+            (SE_TO_TYPE(PVOID, \
+            *SE_TO_TYPE(PVOID*, SE_ADD_POINTER((_t_)->Base, (_x_) * sizeof(PVOID)))))
 #else
 #define SE_CALC_KSDT_ENTRY(_t_, _x_) \
             (SE_ADD_POINTER((_t_)->Base, \
