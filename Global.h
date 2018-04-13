@@ -21,30 +21,9 @@
 
 #include <ntifs.h>
 #include <intrin.h>
-#include <ntddk.h>
-#include <ntimage.h>
-#include <ntddkbd.h>
-#include <ntddmou.h>
-#include <wmilib.h>
-#include <ntstrsafe.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
-
-#include "Defines.h"
-#include "NtApi.h"
-
-#ifndef LOCK
-#define LOCK(e) (ExEnterCriticalRegionAndAcquireResourceExclusive(e))
-#endif // !LOCK
-
-#ifndef UNLOCK
-#define UNLOCK(e) (ExReleaseResourceAndLeaveCriticalRegion(e))
-#endif // !UNLOCK
-
-#ifdef VMP
-#include "VMProtectDDK.h"
-#endif // _VMP
 
 #endif // !_GLOBAL_H_
