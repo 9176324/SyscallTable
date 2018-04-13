@@ -1,10 +1,10 @@
 SyscallTable is a library to call windows kernel SysStubs (Windows 7 - Windows 10), 
-Both support x86 and x64, It is very convenient to use.
+both support x86 and x64, it is very convenient to use.
 
 ## Build steps :
-	Copy code file to you source dir, Declaring function with "Stub" prefix, 
+	Copy code file to you source dir, import file to you project, declaring function with "Stub" prefix, 
 	It is not use "Zw" or "Nt" to prevent conflicts, than you can use this function, 
-	do not include anything.
+	needn't include any header file.
 	
 ## Sample :
 
