@@ -26,4 +26,12 @@
 #include <stdlib.h>
 #include <tchar.h>
 
+#ifndef LOCK
+#define LOCK(e) (ExEnterCriticalRegionAndAcquireResourceExclusive(e))
+#endif // !LOCK
+
+#ifndef UNLOCK
+#define UNLOCK(e) (ExReleaseResourceAndLeaveCriticalRegion(e))
+#endif // !UNLOCK
+
 #endif // !_GLOBAL_H_
