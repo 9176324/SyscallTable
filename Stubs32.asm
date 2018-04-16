@@ -49,7 +49,7 @@ SYSSTUBS_ENTRY MACRO Name, NumArgs
             ret NumArgs
         endif
 
-    DB  12 dup (0cch)           ; fill align 20h
+    DB  14 dup (0cch)           ; fill align 20h
 
     PUBLIC _Stub&Name
 
