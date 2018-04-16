@@ -40,7 +40,8 @@ SYSSTUBS_ENTRY MACRO Name, NumArgs
         push eax
         mov eax, _StubsBridge@0
         jmp eax
-    DB  2 dup (0cch)
+	
+    DB  4 dup (0cch)
 
         ifb <NumArgs>
             ret
@@ -49,7 +50,7 @@ SYSSTUBS_ENTRY MACRO Name, NumArgs
             ret NumArgs
         endif
 
-    DB  14 dup (0cch)           ; fill align 20h
+    DB  12 dup (0cch)           ; fill align 20h
 
     PUBLIC _Stub&Name
 
