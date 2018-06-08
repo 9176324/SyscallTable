@@ -16,11 +16,6 @@
 ; 
 ; 
 
-    .XLIST
-INCLUDE GLOBAL.INC
-INCLUDE KSAMD64.INC
-    .LIST
-
 OPTION CASEMAP:NONE
 
 BuildStubs PROTO
@@ -29,12 +24,12 @@ _DATA$00 SEGMENT PAGE 'DATA'
 
 _DATA$00 ENDS
 
-_TEXT$00 SEGMENT ALIGN(10h) 'CODE'
+_TEXT$00 SEGMENT PAGE 'CODE'
 
 SYSSTUBS_ENTRY macro Name
 
     Stub&Name :
-            mov rax, $ + 0          ; save IP
+            mov rax, Stub&Name      ; save IP
             push rax
             mov rax, StubsBridge
             jmp rax
@@ -72,6 +67,7 @@ SYSSTUBS_ENTRY AllocateReserveObject
 SYSSTUBS_ENTRY AllocateUserPhysicalPages
 SYSSTUBS_ENTRY AllocateUuids
 SYSSTUBS_ENTRY AllocateVirtualMemory
+SYSSTUBS_ENTRY AllocateVirtualMemoryEx
 SYSSTUBS_ENTRY AlpcAcceptConnectPort
 SYSSTUBS_ENTRY AlpcCancelMessage
 SYSSTUBS_ENTRY AlpcConnectPort
@@ -80,22 +76,22 @@ SYSSTUBS_ENTRY AlpcCreatePort
 SYSSTUBS_ENTRY AlpcCreatePortSection
 SYSSTUBS_ENTRY AlpcCreateResourceReserve
 SYSSTUBS_ENTRY AlpcCreateSectionView
-SYSSTUBS_ENTRY AlpcCreateRecurityContext
+SYSSTUBS_ENTRY AlpcCreateSecurityContext
 SYSSTUBS_ENTRY AlpcDeletePortSection
 SYSSTUBS_ENTRY AlpcDeleteResourceReserve
 SYSSTUBS_ENTRY AlpcDeleteSectionView
-SYSSTUBS_ENTRY AlpcDeleteRecurityContext
+SYSSTUBS_ENTRY AlpcDeleteSecurityContext
 SYSSTUBS_ENTRY AlpcDisconnectPort
 SYSSTUBS_ENTRY AlpcImpersonateClientContainerOfPort
 SYSSTUBS_ENTRY AlpcImpersonateClientOfPort
-SYSSTUBS_ENTRY AlpcOpenRenderProcess
-SYSSTUBS_ENTRY AlpcOpenRenderThread
+SYSSTUBS_ENTRY AlpcOpenSenderProcess
+SYSSTUBS_ENTRY AlpcOpenSenderThread
 SYSSTUBS_ENTRY AlpcQueryInformation
 SYSSTUBS_ENTRY AlpcQueryInformationMessage
-SYSSTUBS_ENTRY AlpcRevokeRecurityContext
-SYSSTUBS_ENTRY AlpcRendWaitReceivePort
+SYSSTUBS_ENTRY AlpcRevokeSecurityContext
+SYSSTUBS_ENTRY AlpcSendWaitReceivePort
 SYSSTUBS_ENTRY AlpcSetInformation
-SYSSTUBS_ENTRY ApphelpCacheControl
+SYSSTUBS_ENTRY ApphelpCacheContro
 SYSSTUBS_ENTRY AreMappedFilesTheSame
 SYSSTUBS_ENTRY AssignProcessToJobObject
 SYSSTUBS_ENTRY AssociateWaitCompletionPacket
@@ -156,7 +152,7 @@ SYSSTUBS_ENTRY CreateProfileEx
 SYSSTUBS_ENTRY CreateRegistryTransaction
 SYSSTUBS_ENTRY CreateResourceManager
 SYSSTUBS_ENTRY CreateSection
-SYSSTUBS_ENTRY CreateRemaphore
+SYSSTUBS_ENTRY CreateSemaphore
 SYSSTUBS_ENTRY CreateSymbolicLinkObject
 SYSSTUBS_ENTRY CreateThread
 SYSSTUBS_ENTRY CreateThreadEx
@@ -215,7 +211,7 @@ SYSSTUBS_ENTRY FreeVirtualMemory
 SYSSTUBS_ENTRY FreezeRegistry
 SYSSTUBS_ENTRY FreezeTransactions
 SYSSTUBS_ENTRY FsControlFile
-SYSSTUBS_ENTRY GetCachedSigningLevel
+SYSSTUBS_ENTRY GetCachedSigningLeve
 SYSSTUBS_ENTRY GetCompleteWnfStateSubscription
 SYSSTUBS_ENTRY GetContextThread
 SYSSTUBS_ENTRY GetCurrentProcessorNumber
@@ -256,7 +252,8 @@ SYSSTUBS_ENTRY ManagePartition
 SYSSTUBS_ENTRY MapCMFModule
 SYSSTUBS_ENTRY MapUserPhysicalPages
 SYSSTUBS_ENTRY MapUserPhysicalPagesScatter
-SYSSTUBS_ENTRY MapImageSection
+SYSSTUBS_ENTRY MapViewOfSection
+SYSSTUBS_ENTRY MapViewOfSectionEx
 SYSSTUBS_ENTRY MarshallTransaction
 SYSSTUBS_ENTRY ModifyBootEntry
 SYSSTUBS_ENTRY ModifyDriverEntry
@@ -264,7 +261,7 @@ SYSSTUBS_ENTRY NotifyChangeDirectoryFile
 SYSSTUBS_ENTRY NotifyChangeDirectoryFileEx
 SYSSTUBS_ENTRY NotifyChangeKey
 SYSSTUBS_ENTRY NotifyChangeMultipleKeys
-SYSSTUBS_ENTRY NotifyChangeRession
+SYSSTUBS_ENTRY NotifyChangeSession
 SYSSTUBS_ENTRY OpenDirectoryObject
 SYSSTUBS_ENTRY OpenEnlistment
 SYSSTUBS_ENTRY OpenEvent
@@ -287,8 +284,8 @@ SYSSTUBS_ENTRY OpenProcessTokenEx
 SYSSTUBS_ENTRY OpenRegistryTransaction
 SYSSTUBS_ENTRY OpenResourceManager
 SYSSTUBS_ENTRY OpenSection
-SYSSTUBS_ENTRY OpenRemaphore
-SYSSTUBS_ENTRY OpenRession
+SYSSTUBS_ENTRY OpenSemaphore
+SYSSTUBS_ENTRY OpenSession
 SYSSTUBS_ENTRY OpenSymbolicLinkObject
 SYSSTUBS_ENTRY OpenThread
 SYSSTUBS_ENTRY OpenThreadToken
@@ -296,7 +293,7 @@ SYSSTUBS_ENTRY OpenThreadTokenEx
 SYSSTUBS_ENTRY OpenTimer
 SYSSTUBS_ENTRY OpenTransaction
 SYSSTUBS_ENTRY OpenTransactionManager
-SYSSTUBS_ENTRY PlugPlayControl
+SYSSTUBS_ENTRY PlugPlayContro
 SYSSTUBS_ENTRY PowerInformation
 SYSSTUBS_ENTRY PrePrepareComplete
 SYSSTUBS_ENTRY PrePrepareEnlistment
@@ -304,7 +301,7 @@ SYSSTUBS_ENTRY PrepareComplete
 SYSSTUBS_ENTRY PrepareEnlistment
 SYSSTUBS_ENTRY PrivilegeCheck
 SYSSTUBS_ENTRY PrivilegeObjectAuditAlarm
-SYSSTUBS_ENTRY PrivilegedRerviceAuditAlarm
+SYSSTUBS_ENTRY PrivilegedServiceAuditAlarm
 SYSSTUBS_ENTRY PropagationComplete
 SYSSTUBS_ENTRY PropagationFailed
 SYSSTUBS_ENTRY ProtectVirtualMemory
@@ -351,10 +348,10 @@ SYSSTUBS_ENTRY QueryPerformanceCounter
 SYSSTUBS_ENTRY QueryPortInformationProcess
 SYSSTUBS_ENTRY QueryQuotaInformationFile
 SYSSTUBS_ENTRY QuerySection
-SYSSTUBS_ENTRY QueryRecurityAttributesToken
-SYSSTUBS_ENTRY QueryRecurityObject
-SYSSTUBS_ENTRY QueryRecurityPolicy
-SYSSTUBS_ENTRY QueryRemaphore
+SYSSTUBS_ENTRY QuerySecurityAttributesToken
+SYSSTUBS_ENTRY QuerySecurityObject
+SYSSTUBS_ENTRY QuerySecurityPolicy
+SYSSTUBS_ENTRY QuerySemaphore
 SYSSTUBS_ENTRY QuerySymbolicLinkObject
 SYSSTUBS_ENTRY QuerySystemEnvironmentValue
 SYSSTUBS_ENTRY QuerySystemEnvironmentValueEx
@@ -385,7 +382,7 @@ SYSSTUBS_ENTRY RegisterThreadTerminatePort
 SYSSTUBS_ENTRY ReleaseCMFViewOwnership
 SYSSTUBS_ENTRY ReleaseKeyedEvent
 SYSSTUBS_ENTRY ReleaseMutant
-SYSSTUBS_ENTRY ReleaseRemaphore
+SYSSTUBS_ENTRY ReleaseSemaphore
 SYSSTUBS_ENTRY ReleaseWorkerFactoryWorker
 SYSSTUBS_ENTRY RemoveIoCompletion
 SYSSTUBS_ENTRY RemoveIoCompletionEx
@@ -419,11 +416,11 @@ SYSSTUBS_ENTRY SaveKeyEx
 SYSSTUBS_ENTRY SaveMergedKeys
 SYSSTUBS_ENTRY SavepointComplete
 SYSSTUBS_ENTRY SavepointTransaction
-SYSSTUBS_ENTRY RecureConnectPort
-SYSSTUBS_ENTRY RerializeBoot
+SYSSTUBS_ENTRY SecureConnectPort
+SYSSTUBS_ENTRY SerializeBoot
 SYSSTUBS_ENTRY SetBootEntryOrder
 SYSSTUBS_ENTRY SetBootOptions
-SYSSTUBS_ENTRY SetCachedSigningLevel
+SYSSTUBS_ENTRY SetCachedSigningLeve
 SYSSTUBS_ENTRY SetCachedSigningLevel2
 SYSSTUBS_ENTRY SetContextThread
 SYSSTUBS_ENTRY SetDebugFilterState
@@ -459,7 +456,7 @@ SYSSTUBS_ENTRY SetLdtEntries
 SYSSTUBS_ENTRY SetLowEventPair
 SYSSTUBS_ENTRY SetLowWaitHighEventPair
 SYSSTUBS_ENTRY SetQuotaInformationFile
-SYSSTUBS_ENTRY SetRecurityObject
+SYSSTUBS_ENTRY SetSecurityObject
 SYSSTUBS_ENTRY SetSystemEnvironmentValue
 SYSSTUBS_ENTRY SetSystemEnvironmentValueEx
 SYSSTUBS_ENTRY SetSystemInformation
@@ -484,7 +481,7 @@ SYSSTUBS_ENTRY StopProfile
 SYSSTUBS_ENTRY SubscribeWnfStateChange
 SYSSTUBS_ENTRY SuspendProcess
 SYSSTUBS_ENTRY SuspendThread
-SYSSTUBS_ENTRY SystemDebugControl
+SYSSTUBS_ENTRY SystemDebugContro
 SYSSTUBS_ENTRY TerminateEnclave
 SYSSTUBS_ENTRY TerminateJobObject
 SYSSTUBS_ENTRY TerminateProcess
@@ -492,7 +489,7 @@ SYSSTUBS_ENTRY TerminateThread
 SYSSTUBS_ENTRY TestAlert
 SYSSTUBS_ENTRY ThawRegistry
 SYSSTUBS_ENTRY ThawTransactions
-SYSSTUBS_ENTRY TraceControl
+SYSSTUBS_ENTRY TraceContro
 SYSSTUBS_ENTRY TraceEvent
 SYSSTUBS_ENTRY TranslateFilePath
 SYSSTUBS_ENTRY UmsThreadYield
@@ -506,7 +503,7 @@ SYSSTUBS_ENTRY UnmapViewOfSection
 SYSSTUBS_ENTRY UnmapViewOfSectionEx
 SYSSTUBS_ENTRY UnsubscribeWnfStateChange
 SYSSTUBS_ENTRY UpdateWnfStateData
-SYSSTUBS_ENTRY VdmControl
+SYSSTUBS_ENTRY VdmContro
 SYSSTUBS_ENTRY WaitForAlertByThreadId
 SYSSTUBS_ENTRY WaitForDebugEvent
 SYSSTUBS_ENTRY WaitForKeyedEvent
