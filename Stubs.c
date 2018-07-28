@@ -16,22 +16,15 @@
 *
 */
 
-#include <ntifs.h>
-#include <intrin.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <tchar.h>
+#include <OsDefs.h>
 
 #include "Stubs.h"
 
 #pragma optimize("g", off)
 
-extern PVOID FirstStub;
-
-static PKSTUBS SysNtStubsTable;
-static PVOID SysZwStubsTable;
-static KSPIN_LOCK StubsLock;
+extern KSTUBS_ENTRY ServiceDispatchTable;
+static PKSERVICE_TABLE_DESCRIPTOR ServiceDescriptorTable;
+static KSPIN_LOCK Lock;
 
 #ifndef _WIN64
 /*
@@ -131,7 +124,7 @@ C_ASSERT(sizeof(NotImplemented) == 5);
 
 NTSTATUS
 NTAPI
-CopyPhysicalMemory(
+CopyStub(
     __in_opt PVOID BaseAddress,
     __in_bcount(BufferSize) CONST VOID * Buffer,
     __in SIZE_T BufferSize
@@ -141,23 +134,12 @@ CopyPhysicalMemory(
     PHYSICAL_ADDRESS PhysicalAddress = { 0 };
     PVOID VirtualAddress = NULL;
 
-    PhysicalAddress = MmGetPhysicalAddress(
-        BaseAddress);
+    PhysicalAddress = MmGetPhysicalAddress(BaseAddress);
+    VirtualAddress = MmMapIoSpace(PhysicalAddress, BufferSize, MmNonCached);
 
-    VirtualAddress = MmMapIoSpace(
-        PhysicalAddress,
-        BufferSize,
-        MmNonCached);
-
-    if (VirtualAddress) {
-        RtlCopyMemory(
-            VirtualAddress,
-            Buffer,
-            BufferSize);
-
-        MmUnmapIoSpace(
-            VirtualAddress,
-            BufferSize);
+    if (NULL != VirtualAddress) {
+        RtlCopyMemory(VirtualAddress, Buffer, BufferSize);
+        MmUnmapIoSpace(VirtualAddress, BufferSize);
     }
     else {
         Status = STATUS_INVALID_ADDRESS;
@@ -170,17 +152,17 @@ CopyPhysicalMemory(
 static PVOID KiSystemService;
 
 #define AJUST_STUBS_ENTRY32(Stub) \
-            (AjustStubEntry32((PSTUBS_ENTRY)(Stub)))
+            (AjustStubEntry32((PKSTUBS_ENTRY)(Stub)))
 
 #define AJUST_STUB_ENTRY(Stub, ServiceNumber) \
             (RtlCopyMemory((PVOID)(Stub), (PVOID)StubsEntry, 8 * sizeof(PVOID)),\
-                ((PSTUBS_ENTRY)(Stub))->u1.KiServiceTableIndex = (ULONG)(ServiceNumber),\
+                ((PKSTUBS_ENTRY)(Stub))->u1.KiServiceTableIndex = (ULONG)(ServiceNumber),\
                 AJUST_STUBS_ENTRY32(Stub))
 
 VOID
 NTAPI
 AjustStubEntry32(
-    __in PSTUBS_ENTRY Stub
+    __in PKSTUBS_ENTRY Stub
 )
 {
     ULONG Offset = 0;
@@ -189,7 +171,7 @@ AjustStubEntry32(
         &Stub->u2.KiSystemService -
         sizeof(LONG));
 
-    CopyPhysicalMemory(
+    CopyStub(
         &Stub->u2.KiSystemService,
         &Offset,
         sizeof(ULONG));
@@ -200,12 +182,12 @@ static PVOID KiServiceInternal;
 
 #define AJUST_STUB_ENTRY(Stub, ServiceNumber) \
             (RtlCopyMemory((PVOID)(Stub), (PVOID)StubsEntry, 8 * sizeof(PVOID)),\
-             ((PSTUBS_ENTRY)(Stub))->u1.KiServiceLinkage = (ULONGLONG)KiServiceLinkage,\
-             ((PSTUBS_ENTRY)(Stub))->u2.KiServiceTableIndex = (ULONG)(ServiceNumber), \
-             ((PSTUBS_ENTRY)(Stub))->u3.KiServiceInternal = (ULONGLONG)KiServiceInternal)
+             ((PKSTUBS_ENTRY)(Stub))->u1.KiServiceLinkage = (ULONGLONG)KiServiceLinkage,\
+             ((PKSTUBS_ENTRY)(Stub))->u2.KiServiceTableIndex = (ULONG)(ServiceNumber), \
+             ((PKSTUBS_ENTRY)(Stub))->u3.KiServiceInternal = (ULONGLONG)KiServiceInternal)
 #endif
 
-static const PWSTR StubsNameTable[] = { 
+static const PWSTR NameTable[] = {
     L"AcceptConnectPort",
     L"AccessCheck",
     L"AccessCheckAndAuditAlarm",
@@ -686,7 +668,7 @@ static const PWSTR StubsNameTable[] = {
     L"YieldExecution"
 };
 
-static const SHORT StubsNumberTable[][20] = {
+static const SHORT NumberTable[][20] = {
     { 0,96,0,96,428,97,1,1,2,2,2,2,2,2,2,2,2,2,2,2 },
     { 1,97,1,97,427,98,432,98,0,0,0,0,0,0,0,0,0,0,0,0 },
     { 2,38,2,38,426,39,431,40,439,41,442,41,444,41,450,41,454,41,454,41 },
@@ -1167,35 +1149,26 @@ static const SHORT StubsNumberTable[][20] = {
     { 400,67,400,67,1,68,2,69,3,70,3,70,3,70,3,70,3,70,3,70 }
 };
 
-static const ULONG BuildNumberTable[] = {
-    7600,
-    7601,
-    9200,
-    9600,
-    10240,
-    10586,
-    14393,
-    15063,
-    16299,
-    17134
+static const ULONG OsBuildTable[] = {
+    7600, 7601, 9200, 9600, 10240, 10586, 14393, 15063, 16299, 17134
 };
 
 static
 SHORT
 NTAPI
-FindNameIndex(
-    __in PWSTR StubName
+NameToIndex(
+    __in PWSTR Name
 )
 {
     SHORT Result = -1;
     SHORT Index = 0;
 
     for (Index = 0;
-        Index < RTL_NUMBER_OF(StubsNameTable);
+        Index < RTL_NUMBER_OF(NameTable);
         Index++) {
-        if (!wcscmp(
-            StubName,
-            StubsNameTable[Index])) {
+        if (0 == _wcsicmp(
+            Name,
+            NameTable[Index])) {
             Result = Index;
             break;
         }
@@ -1207,16 +1180,16 @@ FindNameIndex(
 static
 SHORT
 NTAPI
-FindNumber(
-    __in PWSTR StubName
+NameToNumber(
+    __in PWSTR Name
 )
 {
     NTSTATUS Status = STATUS_SUCCESS;
     ULONG BuildNumber = 0;
     SHORT Result = -1;
     CCHAR Version = -1;
-    SHORT NameIndex = -1;
-    CCHAR Index = 0;
+    SHORT Index = -1;
+    CCHAR OsSelect = 0;
 
     PsGetVersion(
         NULL,
@@ -1225,23 +1198,23 @@ FindNumber(
         NULL);
 
     if (NT_SUCCESS(Status)) {
-        for (Index = 0;
-            Index < RTL_NUMBER_OF(BuildNumberTable);
-            Index++) {
-            if (BuildNumber == BuildNumberTable[Index]) {
+        for (OsSelect = 0;
+            OsSelect < RTL_NUMBER_OF(OsBuildTable);
+            OsSelect++) {
+            if (BuildNumber == OsBuildTable[OsSelect]) {
 #ifndef _WIN64
-                Version = Index * 2;
+                Version = OsSelect * 2;
 #else
-                Version = Index * 2 + 1;
+                Version = OsSelect * 2 + 1;
 #endif
             }
         }
 
         if (Version >= 0) {
-            NameIndex = FindNameIndex(StubName);
+            Index = NameToIndex(Name);
 
-            if (NameIndex >= 0) {
-                Result = StubsNumberTable[NameIndex][Version];
+            if (Index >= 0) {
+                Result = NumberTable[Index][Version];
             }
         }
     }
@@ -1258,36 +1231,40 @@ FindAddress(
 {
     NTSTATUS Status = STATUS_SUCCESS;
     PCHAR FoundAddress = NULL;
-    UNICODE_STRING FunctionName_Ustr = { 0 };
-    SIZE_T Index = 0;
+    UNICODE_STRING FunctionName = { 0 };
+    SIZE_T Offset = 0;
+    PLONG Pointer = NULL;
 
 #ifndef _WIN64
+#define SERVICE_SIGNATURE "\x6a\x08\xe8"
 
     RtlInitUnicodeString(
-        &FunctionName_Ustr,
+        &FunctionName,
         L"KeServiceDescriptorTable");
 
-    SysNtStubsTable = (PKSTUBS)MmGetSystemRoutineAddress(&FunctionName_Ustr);
+    ServiceDescriptorTable = (PKSERVICE_TABLE_DESCRIPTOR)
+        MmGetSystemRoutineAddress(&FunctionName);
 
-    if (FALSE != MmIsAddressValid(SysNtStubsTable)) {
+    if (FALSE != MmIsAddressValid(ServiceDescriptorTable)) {
         RtlInitUnicodeString(
-            &FunctionName_Ustr,
+            &FunctionName,
             L"ZwClose");
 
-        FoundAddress = MmGetSystemRoutineAddress(&FunctionName_Ustr);
+        FoundAddress = MmGetSystemRoutineAddress(&FunctionName);
 
         if (FALSE != MmIsAddressValid(FoundAddress)) {
             Status = STATUS_ENTRYPOINT_NOT_FOUND;
 
-            for (Index = 0;
-                Index < 0x40;
-                Index++) {
-                if (3 == RtlCompareMemory(
-                    FoundAddress + Index,
-                    "\x6a\x08\xe8",
-                    3)) {
-                    KiSystemService = (PCHAR)(FoundAddress + Index + 3) +
-                        *(PLONG)(FoundAddress + Index + 3) + sizeof(LONG);
+            for (Offset = 0;
+                Offset < 0x40;
+                Offset++) {
+                if (sizeof(SERVICE_SIGNATURE) - 1 == RtlCompareMemory(
+                    FoundAddress + Offset,
+                    SERVICE_SIGNATURE,
+                    sizeof(SERVICE_SIGNATURE) - 1)) {
+                    Pointer = (PLONG)(FoundAddress + Offset + sizeof(SERVICE_SIGNATURE) - 1);
+                    KiSystemService = (PCHAR)Pointer + *Pointer + sizeof(LONG);
+
                     Status = STATUS_SUCCESS;
                     break;
                 }
@@ -1300,50 +1277,52 @@ FindAddress(
     else {
         Status = STATUS_ENTRYPOINT_NOT_FOUND;
     }
-
 #else
+#define _INTERNAL "\x00\x00\xe9"
+#define _LINKAGE "\x48\x8d\x05"
+#define _TABLE "\x4c\x8d\x15"
+
     RtlInitUnicodeString(
-        &FunctionName_Ustr,
+        &FunctionName,
         L"ZwClose");
 
-    FoundAddress = MmGetSystemRoutineAddress(&FunctionName_Ustr);
+    FoundAddress = MmGetSystemRoutineAddress(&FunctionName);
 
     if (FALSE != MmIsAddressValid(FoundAddress)) {
         Status = STATUS_ENTRYPOINT_NOT_FOUND;
 
-        for (Index = 0;
-            Index < 0x40;
-            Index++) {
-            if (3 == RtlCompareMemory(
-                FoundAddress + Index,
-                "\x00\x00\xe9",
-                3)) {
-                KiServiceInternal = (PCHAR)(FoundAddress + Index + 3) +
-                    *(PLONG)(FoundAddress + Index + 3) + sizeof(LONG);
+        for (Offset = 0;
+            Offset < sizeof(KSTUBS_ENTRY);
+            Offset++) {
+            if (sizeof(_INTERNAL) - 1 == RtlCompareMemory(
+                FoundAddress + Offset,
+                _INTERNAL,
+                sizeof(_INTERNAL) - 1)) {
+                Pointer = (PLONG)(FoundAddress + Offset + sizeof(_INTERNAL) - 1);
+                KiServiceInternal = (PCHAR)Pointer + *Pointer + sizeof(LONG);
 
-                for (Index = 0;
-                    Index < 0x40;
-                    Index++) {
-                    if (3 == RtlCompareMemory(
-                        FoundAddress + Index,
-                        "\x48\x8d\x05",
-                        3)) {
-                        KiServiceLinkage = (PCHAR)(FoundAddress + Index + 3) +
-                            *(PLONG)(FoundAddress + Index + 3) +
-                            sizeof(LONG);
+                for (Offset = 0;
+                    Offset < sizeof(KSTUBS_ENTRY);
+                    Offset++) {
+                    if (sizeof(_LINKAGE) - 1 == RtlCompareMemory(
+                        FoundAddress + Offset,
+                        _LINKAGE,
+                        sizeof(_LINKAGE) - 1)) {
+                        Pointer = (PLONG)(FoundAddress + Offset + sizeof(_LINKAGE) - 1);
+                        KiServiceLinkage = (PCHAR)Pointer + *Pointer + sizeof(LONG);
 
                         FoundAddress = KiServiceInternal;
 
-                        for (Index = 0;
-                            Index < PAGE_SIZE;
-                            Index++) {
-                            if (3 == RtlCompareMemory(
-                                FoundAddress + Index,
-                                "\x4c\x8d\x15",
-                                3)) {
-                                SysNtStubsTable = (PKSTUBS)((PCHAR)(FoundAddress + Index + 3) +
-                                    *(PLONG)(FoundAddress + Index + 3) +
-                                    sizeof(LONG));
+                        for (Offset = 0;
+                            Offset < PAGE_SIZE;
+                            Offset++) {
+                            if (sizeof(_TABLE) - 1 == RtlCompareMemory(
+                                FoundAddress + Offset,
+                                _TABLE,
+                                sizeof(_TABLE) - 1)) {
+                                Pointer = (PLONG)(FoundAddress + Offset + sizeof(_TABLE) - 1);
+                                ServiceDescriptorTable = (PKSERVICE_TABLE_DESCRIPTOR)
+                                    ((PCHAR)Pointer + *Pointer + sizeof(LONG));
 
                                 Status = STATUS_SUCCESS;
                                 break;
@@ -1361,7 +1340,6 @@ FindAddress(
     else {
         Status = STATUS_ENTRYPOINT_NOT_FOUND;
     }
-
 #endif
 
     return Status;
@@ -1371,95 +1349,81 @@ static
 PVOID
 NTAPI
 NameToAddress(
-    __in PWSTR StubName
+    __in PKSTUBS_ENTRY Table,
+    __in PWSTR Name
 )
 {
-    PVOID FunctionAddress = NULL;
-    SHORT StubNumber = -1;
+    PVOID Address = NULL;
+    SHORT Number = -1;
 
-    StubNumber = FindNumber(StubName);
+    Number = NameToNumber(Name);
 
-    if (StubNumber >= 0) {
-        FunctionAddress = (PCHAR)SysZwStubsTable + StubNumber * sizeof(PVOID) * 8;
+    if (Number >= 0) {
+        Address = (PCHAR)&Table[Number];
     }
 
-    return FunctionAddress;
+    return Address;
 }
 
 NTSTATUS
 NTAPI
-BuildStubs(
+BuildServiceDispatchTable(
     VOID
 )
 {
     NTSTATUS Status = STATUS_SUCCESS;
-    SIZE_T Count = 0;
-    SIZE_T NumberOfBytes = 0;
-    PHYSICAL_ADDRESS HighestAcceptableAddress = { 0 };
-    PVOID NextEntryPoint = NULL;
-    SIZE_T Index = 0;
+    PVOID Address = NULL;
+    ULONG Index = 0;
     KIRQL OldIrql = 0;
+    PKSTUBS_ENTRY TempDispatchTable = NULL;
 
-    OldIrql = KeAcquireSpinLockForDpc(&StubsLock);
+    OldIrql = KeAcquireSpinLockForDpc(&Lock);
 
-    if (NULL == SysNtStubsTable) {
+    if (NULL == ServiceDescriptorTable) {
         Status = FindAddress();
 
         if (NT_SUCCESS(Status)) {
-            Count = SysNtStubsTable[SYSTEM_SERVICE_INDEX].Count;
-            NumberOfBytes = Count * sizeof(PVOID) * 8;
+            TempDispatchTable = ExAllocatePool(
+                NonPagedPool,
+                ServiceDescriptorTable->Limit * sizeof(KSTUBS_ENTRY));
 
-            if (NumberOfBytes) {
-                HighestAcceptableAddress.QuadPart = -1;
-
-                SysZwStubsTable = MmAllocateContiguousMemory(
-                    NumberOfBytes,
-                    HighestAcceptableAddress);
-
-                if (SysZwStubsTable) {
-                    for (Index = 0;
-                        Index < Count;
-                        Index++) {
-                        AJUST_STUB_ENTRY(
-                            (PCHAR)SysZwStubsTable + Index * sizeof(PVOID) * 8,
-                            Index);
-                    }
-
-                    for (Index = 0;
-                        Index < MaxNumberStubs;
-                        Index++) {
-                        NextEntryPoint = NameToAddress(StubsNameTable[Index]);
-
-                        if (NextEntryPoint) {
-#ifndef _WIN64
-                            CopyPhysicalMemory(
-                                (PCHAR)&FirstStub + Index * sizeof(PVOID) * 8,
-                                NextEntryPoint,
-                                FIELD_OFFSET(KSTUBS_ENTRY, Ret));
-
-                            AJUST_STUBS_ENTRY32(
-                                (PCHAR)&FirstStub + Index * sizeof(PVOID) * 8);
-#else
-                            CopyPhysicalMemory(
-                                (PCHAR)&FirstStub + Index * sizeof(PVOID) * 8,
-                                NextEntryPoint,
-                                sizeof(PVOID) * 8);
-#endif // !_WIN64
-                        }
-                    }
-
-                    MmFreeContiguousMemory(
-                        SysZwStubsTable);
-
-                    SysZwStubsTable = NULL;
+            if (NULL != TempDispatchTable) {
+                for (Index = 0;
+                    Index < ServiceDescriptorTable->Limit;
+                    Index++) {
+                    AJUST_STUB_ENTRY(
+                        (PCHAR)&TempDispatchTable[Index],
+                        Index);
                 }
+
+                for (Index = 0;
+                    Index < MaxNumberStubs;
+                    Index++) {
+                    Address = NameToAddress(TempDispatchTable, NameTable[Index]);
+
+                    if (Address) {
+#ifndef _WIN64
+                        CopyStub(
+                            &ServiceDispatchTable + Index,
+                            Address,
+                            FIELD_OFFSET(KSTUBS_ENTRY, Ret));
+
+                        AJUST_STUBS_ENTRY32(&ServiceDispatchTable + Index);
+#else
+                        CopyStub(
+                            &ServiceDispatchTable + Index,
+                            Address,
+                            sizeof(KSTUBS_ENTRY));
+#endif // !_WIN64
+                    }
+                }
+
+                ExFreePool(TempDispatchTable);
             }
         }
     }
 
-    KeReleaseSpinLockForDpc(
-        &StubsLock,
-        OldIrql);
+    KeReleaseSpinLockForDpc(&Lock, OldIrql);
 
     return Status;
 }

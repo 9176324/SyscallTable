@@ -504,19 +504,7 @@ extern "C" {
         NumberWriteVirtualMemory,
         NumberYieldExecution,
         MaxNumberStubs
-}KSTUBS_CLASS;
-
-#define NUMBER_SERVICE_TABLES 2
-
-#define SYSTEM_SERVICE_INDEX 0
-#define WIN32K_SERVICE_INDEX 1
-
-    typedef struct _KSTUBS {
-        PVOID Base;
-        SIZE_T Limit;
-        SIZE_T Count;
-        PVOID End;
-    } KSTUBS, *PKSTUBS;
+    }KSTUBS_CLASS;
 
 #ifndef _WIN64
 
@@ -539,7 +527,7 @@ extern "C" {
         CHAR Ret[3];
         CHAR Alignment[12];
 #pragma pack(pop)
-    } KSTUBS_ENTRY, *PSTUBS_ENTRY;
+    } KSTUBS_ENTRY, *PKSTUBS_ENTRY;
 
     C_ASSERT(FIELD_OFFSET(KSTUBS_ENTRY, u1.KiServiceTableIndex) == 1);
     C_ASSERT(FIELD_OFFSET(KSTUBS_ENTRY, u2.KiSystemService) == 0xd);
@@ -571,7 +559,7 @@ extern "C" {
         CHAR Reserved7[3];
         CHAR Alignment[3];
 #pragma pack(pop)
-    } KSTUBS_ENTRY, *PSTUBS_ENTRY;
+    } KSTUBS_ENTRY, *PKSTUBS_ENTRY;
 
     C_ASSERT(FIELD_OFFSET(KSTUBS_ENTRY, u1.KiServiceLinkage) == 0x22);
     C_ASSERT(FIELD_OFFSET(KSTUBS_ENTRY, u2.KiServiceTableIndex) == 0x2c);
